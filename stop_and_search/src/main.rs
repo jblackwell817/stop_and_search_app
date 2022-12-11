@@ -13,8 +13,23 @@ async fn index() -> Option<NamedFile> {
     NamedFile::open(path).await.ok()
 }
 
-#[get("/force/<force_name>/<year>/<month>")]
-async fn force(force_name: &str, year: &str, month: &str) -> Result<String, NotFound<String>> {
+#[get("/force/<force_name>")]
+async fn force(force_name: &str) -> Result<String, NotFound<String>> {
+    let months = vec!["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"];
+    let mut all_searches = Vec::new();
+    for month in months {
+        let searches = force_by_month(force_name, "2022", month).await;
+        match searches {
+            Ok(mut s) => all_searches.append(&mut s),
+            Err(_e) => ()
+        }
+    }
+    let stats = ForceStats::new(force_name, all_searches);
+    Ok(stats.to_string())
+}
+
+/// Get the data for a police force for a particular month
+async fn force_by_month(force_name: &str, year: &str, month: &str) -> Result<Vec<Search>, ()> {
     let request_url = format!("https://data.police.uk/api/stops-force?force={}&date={}-{}", force_name, year, month);
     let response = reqwest::get(&request_url).await;
     match response {
@@ -22,19 +37,13 @@ async fn force(force_name: &str, year: &str, month: &str) -> Result<String, NotF
             let msg = r.text().await.unwrap().replace("type", "search_type");
             let searches: Result<Vec<Search>, Error> = serde_json::from_str(&msg);
             match searches {
-                Ok(s) => {
-                    let stats = ForceStats::new(force_name, s);
-                    Ok(stats.to_string())
-                },
-                Err(e) => {
-                    println!("Error retrieving data: {}", e);
-                    Err(NotFound("Error retrieving data".to_string()))
-                }
+                Ok(s) => Ok(s),
+                Err(_e) => Err(())
             }
         },
         Err(e) => {
             println!("Invalid request: {}", e);
-            Err(NotFound("Invalid request".to_string()))
+            Err(())
         },
     }
 }
