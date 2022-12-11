@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+/// A serializable struct representing a single stop and search
 #[derive(Deserialize, Debug)]
 pub struct Search {
     pub age_range: Option<String>,
@@ -10,6 +11,7 @@ pub struct Search {
     pub officer_defined_ethnicity: Option<String>,
 }
 
+/// A struct representing the location of a stop and search
 #[derive(Deserialize, Debug)]
 pub struct Location {
     latitude: Option<String>,
@@ -18,6 +20,7 @@ pub struct Location {
 
 }
 
+/// A struct representing the street which a stop and search took place on
 #[derive(Deserialize, Debug)]
 pub struct Street {
     id: Option<i32>,

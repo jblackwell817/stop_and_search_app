@@ -2,6 +2,7 @@ use std::{collections::HashMap, fmt};
 use crate::search::Search;
 use crate::ethnicity::Ethnicity;
 
+/// A struct representing the headline stop and search statistics for a particular police force
 pub struct ForceStats<'a> {
     force_name: &'a str,
     number_of_searches: usize,
@@ -9,7 +10,7 @@ pub struct ForceStats<'a> {
 }
 
 impl<'a> ForceStats<'a> {
-    // Constructor
+    /// Constructor
     pub fn new(force_name: &'a str, searches: Vec<Search>) -> Self {
         let number_of_searches = searches.len();
         let mut ethnicities_count = HashMap::new();
@@ -35,6 +36,8 @@ impl<'a> fmt::Display for ForceStats<'a> {
     }
 }
 
+/// Takes all known descriptions of ethnicities and categorises them into one of the following:
+/// white, black, asian, mixed and unknown.
 pub fn categorise_ethnicity(verbose_ethnicity: Option<String>) -> Ethnicity {
     if verbose_ethnicity.is_none() {
         return Ethnicity::Unknown;
