@@ -11,9 +11,9 @@ function App() {
   // check that the form has been completed and fetch the data from the back-end
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setData("Fetching data...");
     if (force === "nothing") {
-      const {emptyData} = "";
-      setData(emptyData);
+      setData("Please select a police force from the dropdown");
     } else {
       const url = "http://127.0.0.1:8000/force/" + force;
       const {data} = await axios(url);
